@@ -1,6 +1,6 @@
 package com.example.chat.domain;
 
-import com.example.chat.dto.UserJoinDto;
+import com.example.chat.dto.JoinDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,15 +13,17 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
-@Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PROTECTED)
 @Builder
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "USER_ID")
     private Long id;
 
     @Column(unique = true)
@@ -39,7 +41,7 @@ public class User {
     @Builder.Default
     private Set<Authority> authorities = new HashSet<>();
 
-    public static User of(UserJoinDto joinDto) {
+    public static User of(JoinDto joinDto) {
         User user = User.builder()
                 .username(UUID.randomUUID().toString())
                 .email(joinDto.getEmail())
@@ -50,7 +52,7 @@ public class User {
         return user;
     }
 
-    public static User ofAdmin(UserJoinDto joinDto) {
+    public static User ofAdmin(JoinDto joinDto) {
         User user = User.builder()
                 .username(UUID.randomUUID().toString())
                 .email(joinDto.getEmail())

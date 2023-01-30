@@ -1,11 +1,14 @@
 package com.example.chat.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-public class UserJoinDto {
+@NoArgsConstructor @AllArgsConstructor
+public class JoinDto {
     private String email;
     private String password;
     private String nickname;

@@ -1,6 +1,7 @@
 package com.example.chat.config.jwt;
 
 import com.example.chat.config.auth.PrincipalDetailsService;
+import com.example.chat.repository.LogoutAccessTokenRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final PrincipalDetailsService principalDetailsService;
+    private final LogoutAccessTokenRedisRepository logoutAccessTokenRedisRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -49,7 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void checkLogout(String accessToken) {
-        log.info("JwtAuthenticationFilter/checkLogout(): 로그이아웃 검증 로직 추가 필요");
+        if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
+            throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
+        }
     }
 
     private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername) {
