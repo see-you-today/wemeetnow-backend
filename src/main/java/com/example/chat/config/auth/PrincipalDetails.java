@@ -21,25 +21,74 @@ import static java.util.stream.Collectors.toList;
 @AllArgsConstructor
 @Builder
 public class PrincipalDetails implements UserDetails {
-    private String username;
+//    private String username;
+    private String email;
     private String password;
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
+    List<GrantedAuthority> authorities;
 
-    public static UserDetails of(User user) {
-        return PrincipalDetails.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .roles(user.getRoles())
-                .build();
+//    @Builder.Default
+//    private List<String> roles = new ArrayList<>();
+
+//    public static UserDetails of(User user) {
+//        return PrincipalDetails.builder()
+//                .username(user.getUsername())
+//                .password(user.getPassword())
+//                .roles(user.getRoles())
+//                .build();
+//    }
+//
+//    @Override
+//    @JsonIgnore
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return roles.stream()
+//                .map(SimpleGrantedAuthority::new)
+//                .collect(toList());
+//    }
+//
+//    @Override
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    @Override
+//    public String getUsername() {
+//        return username;
+//    }
+//
+//    @Override
+//    @JsonIgnore
+//    public boolean isAccountNonExpired() {
+//        return false;
+//    }
+//
+//    @Override
+//    @JsonIgnore
+//    public boolean isAccountNonLocked() {
+//        return false;
+//    }
+//
+//    @Override
+//    @JsonIgnore
+//    public boolean isCredentialsNonExpired() {
+//        return false;
+//    }
+//
+//    @Override
+//    @JsonIgnore
+//    public boolean isEnabled() {
+//        return false;
+//    }
+
+    @Builder
+    public PrincipalDetails(String email, String password, List<GrantedAuthority> authorities) {
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
     }
 
     @Override
-    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(toList());
+        return authorities;
     }
 
     @Override
@@ -49,30 +98,26 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
-    @JsonIgnore
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
-    @JsonIgnore
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
-    @JsonIgnore
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
-    @JsonIgnore
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

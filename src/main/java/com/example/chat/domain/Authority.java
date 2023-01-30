@@ -16,10 +16,11 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class Authority implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "AUTHORITY_ID")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     private String role;
