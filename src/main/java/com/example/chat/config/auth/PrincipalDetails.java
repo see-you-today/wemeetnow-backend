@@ -18,7 +18,6 @@ import static java.util.stream.Collectors.toList;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class PrincipalDetails implements UserDetails {
 //    private String username;

@@ -1,9 +1,7 @@
 package com.example.chat.config.jwt;
 
-import com.example.chat.config.auth.PrincipalDetails;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.example.chat.domain.Role;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +17,11 @@ import static com.example.chat.config.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIR
 
 @Slf4j
 @Component
-public class JwtTokenUtil {
+public class JwtUtil {
     @Value("${jwt.secret}")
-    private String SECRET_KEY;
+    private static String SECRET_KEY;
 
-    public Claims extractAllClaims(String token) { // 2
+    public static Claims extractAllClaims(String token) { // 2
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(SECRET_KEY))
                 .build()
@@ -31,31 +29,36 @@ public class JwtTokenUtil {
                 .getBody();
     }
 
-    public String getUsername(String token) {
-        return extractAllClaims(token).get("username", String.class);
+    public static String getEmail(String token) {
+        return extractAllClaims(token).get("email", String.class);
+    }
+    public static Long getId(String token){
+        return extractAllClaims(token).get("id", Long.class);
     }
 
-    private SecretKey getSigningKey(String secretKey) {
+    private static SecretKey getSigningKey(String secretKey) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Boolean isTokenExpired(String token) {
+    public static Boolean isExpired(String token) {
         Date expiration = extractAllClaims(token).getExpiration();
         return expiration.before(new Date());
     }
 
-    public String generateAccessToken(String username) {
-        return doGenerateToken(username, ACCESS_TOKEN_EXPIRATION_TIME.getValue());
+    public String generateAccessToken(Long userId, String email, Role role) {
+        return doGenerateToken(userId, email, role, ACCESS_TOKEN_EXPIRATION_TIME.getValue());
     }
 
-    public String generateRefreshToken(String username) {
-        return doGenerateToken(username, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
+    public String generateRefreshToken(Long userId, String email, Role role) {
+        return doGenerateToken(userId, email, role, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
     }
 
-    private String doGenerateToken(String username, long expireTime) { // 1
+    private String doGenerateToken(Long userId, String email, Role role, long expireTime) { // 1
         Claims claims = Jwts.claims();
-        claims.put("username", username);
+        claims.put("userId", userId);
+        claims.put("email", email);
+        claims.put("role", role);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -66,9 +69,23 @@ public class JwtTokenUtil {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        String username = getUsername(token);
-        return username.equals(userDetails.getUsername())
-                && !isTokenExpired(token);
+        try {
+            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            String email = getEmail(token);
+            return email.equals(userDetails.getUsername())
+                    && !isExpired(token);
+        } catch(SecurityException | MalformedJwtException e) {
+            log.error("Invalid JWT signature");
+            return false;
+        } catch(UnsupportedJwtException e) {
+            log.error("Unsupported JWT token");
+            return false;
+        } catch(IllegalArgumentException e) {
+            log.error("JWT token is invalid");
+            return false;
+        }
+
+
     }
 
     public long getRemainMilliSeconds(String token) {
