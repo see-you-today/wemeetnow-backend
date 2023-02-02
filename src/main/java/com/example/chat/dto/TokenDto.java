@@ -1,10 +1,12 @@
 package com.example.chat.dto;
 
-import com.example.chat.config.jwt.JwtHeaderUtilEnums;
+import com.example.chat.config.jwt.JwtUtilEnums;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import static com.example.chat.config.jwt.JwtUtilEnums.*;
 
 @Data
 @Builder
@@ -16,7 +18,7 @@ public class TokenDto {
 
     public static TokenDto of(String accessToken, String refreshToken) {
         return TokenDto.builder()
-                .grantType(JwtHeaderUtilEnums.GRANT_TYPE.getValue())
+                .grantType(TOKEN_PREFIX.getValue())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

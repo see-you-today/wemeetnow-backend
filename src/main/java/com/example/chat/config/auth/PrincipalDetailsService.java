@@ -1,12 +1,12 @@
 package com.example.chat.config.auth;
 
-import com.example.chat.advice.exception.UserNotFoundException;
 import com.example.chat.config.cache.CacheKey;
 import com.example.chat.domain.User;
 import com.example.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,16 +36,29 @@ public class PrincipalDetailsService implements UserDetailsService {
 //        return PrincipalDetails.of(findUser);
 //    }
 
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        User findUser = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+//
+//        return PrincipalDetails.builder()
+//                .email(findUser.getEmail())
+//                .password(findUser.getPassword())
+//                .authorities(findUser.getRoles().stream()
+//                        .map(auth -> new SimpleGrantedAuthority(auth.toString()))
+//                        .collect(toList()))
+//                .build();
+//    }
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User findUser = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-
+        User findUser = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("가입되지 않은 이메일입니다."));
+        List<GrantedAuthority> roles = new ArrayList<>();
+        log.info("findUser.getRoles(): ", findUser.getRoles());
+        log.info("findUser.getRoles().toString(): ", findUser.getRoles().toString());
+        roles.add(new SimpleGrantedAuthority(findUser.getRoles().toString()));
         return PrincipalDetails.builder()
                 .email(findUser.getEmail())
                 .password(findUser.getPassword())
-                .authorities(findUser.getRoles().stream()
-                        .map(auth -> new SimpleGrantedAuthority(auth.toString()))
-                        .collect(toList()))
+                .authorities(roles)
                 .build();
     }
 }
