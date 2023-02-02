@@ -1,72 +1,53 @@
 package com.example.chat.config;
 
-import com.example.chat.config.auth.PrincipalDetailsService;
-import com.example.chat.config.jwt.JwtAuthenticationFilter;
-import com.example.chat.config.jwt.JwtEntryPoint;
+import com.example.chat.config.entrypoint.CustomAuthenticationEntryPoint;
+import com.example.chat.config.jwt.JwtFilter;
+import com.example.chat.service.UserService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final JwtEntryPoint jwtEntryPoint;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final PrincipalDetailsService principalDetailsService;
+public class SecurityConfig {
+    private final UserService userService;
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    public void configure(WebSecurity web) { // 4
-        web.ignoring().antMatchers("/h2-console/**", "/favicon.ico");
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
                 .httpBasic().disable()
-                .cors()
-                .and()
                 .csrf().disable()
-                .authorizeRequests() // 5
-                .antMatchers("/api/v1", "/api/v1/join/**", "/api/v1/login", "/api/v1/chat").permitAll()
-                .anyRequest().hasRole("USER")
-
+                .cors().and()
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS)
                 .and()
                 .exceptionHandling()
-                .authenticationEntryPoint(jwtEntryPoint)
-
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .logout().disable() // 6
-                .sessionManagement().sessionCreationPolicy(STATELESS)
-
-                .and() // 7
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        ;
+                .authorizeRequests()
+                .antMatchers("/api/v1/users/join", "/api/v1/users/login", "/api/v1/chat/**").permitAll()
+                .antMatchers("/api/v1/users").hasRole("ADMIN")
+                .antMatchers(POST, "/api/v1/**").authenticated()
+                .and()
+                .logout()
+                .logoutSuccessUrl("/")
+                .and()
+//                .oauth2Login()
+//                .userInfoEndpoint()
+                .addFilterBefore(new JwtFilter(userService), UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(principalDetailsService).passwordEncoder(passwordEncoder());
-    }
 }
