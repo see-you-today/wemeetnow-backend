@@ -53,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String email = JwtUtil.getEmail(token);
         log.info("try access user's email = " + email);
         User findUser = userService.getUserByEmail(email);
-        log.info("findUser's role = " + findUser.getRoles());
+        log.info("findUser's role = " + findUser.getRole());
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken("", null, List.of(new SimpleGrantedAuthority("ROLE_USER"))); // 문열어주기
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 다음인증에 필요한 정보를 넘김

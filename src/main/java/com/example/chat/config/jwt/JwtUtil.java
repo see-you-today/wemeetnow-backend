@@ -3,6 +3,7 @@ package com.example.chat.config.jwt;
 import com.example.chat.domain.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,7 +60,7 @@ public class JwtUtil {
         claims.put("userId", userId);
         claims.put("email", email);
         claims.put("role", role);
-
+        log.info("enter doGenerateToken() with ", SECRET_KEY);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))

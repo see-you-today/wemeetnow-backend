@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class UserJoinDto {
+public class UserJoinRequestDto {
     private String email;
     private String password;
     private String passwordCorrect;
@@ -22,13 +22,11 @@ public class UserJoinDto {
     private Role role;
 
     public User toEntity(String enCodedPassword) {
-        List<Role> roleList = new ArrayList<>();
-        roleList.add(this.role);
         return User.builder()
                 .email(this.email)
                 .password(enCodedPassword)
                 .username(this.username)
-                .roles(roleList)
+                .role(this.role)
                 .build();
     }
 }
