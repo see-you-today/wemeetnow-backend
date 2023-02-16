@@ -36,29 +36,15 @@ public class PrincipalDetailsService implements UserDetailsService {
 //        return PrincipalDetails.of(findUser);
 //    }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//        User findUser = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
-//
-//        return PrincipalDetails.builder()
-//                .email(findUser.getEmail())
-//                .password(findUser.getPassword())
-//                .authorities(findUser.getRoles().stream()
-//                        .map(auth -> new SimpleGrantedAuthority(auth.toString()))
-//                        .collect(toList()))
-//                .build();
-//    }
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User findUser = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("가입되지 않은 이메일입니다."));
         List<GrantedAuthority> roles = new ArrayList<>();
-        log.info("findUser.getRoles(): ", findUser.getRoles());
-        log.info("findUser.getRoles().toString(): ", findUser.getRoles().toString());
-        roles.add(new SimpleGrantedAuthority(findUser.getRoles().toString()));
+        log.info("findUser.getRoles(): ", findUser.getRole());
+        log.info("findUser.getRoles().toString(): ", findUser.getRole().toString());
+        roles.add(new SimpleGrantedAuthority(findUser.getRole().toString()));
         return PrincipalDetails.builder()
-                .email(findUser.getEmail())
-                .password(findUser.getPassword())
-                .authorities(roles)
+                .user(findUser)
                 .build();
     }
 }
