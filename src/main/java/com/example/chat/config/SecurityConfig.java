@@ -2,6 +2,7 @@ package com.example.chat.config;
 
 import com.example.chat.config.entrypoint.CustomAuthenticationEntryPoint;
 import com.example.chat.config.jwt.JwtFilter;
+import com.example.chat.config.jwt.JwtUtil;
 import com.example.chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 
@@ -21,8 +22,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final UserService userService;
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private static final String[] PERMIT_URL = {
+        "/api/v1/users/join", "/api/v1/users/login", "/api/v1/chat/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -37,7 +39,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/v1/users/join", "/api/v1/users/login", "/api/v1/chat/**").permitAll()
+                .antMatchers(PERMIT_URL).permitAll()
                 .antMatchers("/api/v1/users").hasRole("ADMIN")
                 .antMatchers(POST, "/api/v1/**").authenticated()
                 .and()

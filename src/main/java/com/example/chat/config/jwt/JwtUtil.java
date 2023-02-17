@@ -19,8 +19,12 @@ import static com.example.chat.config.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIR
 @Slf4j
 @Component
 public class JwtUtil {
-    @Value("${jwt.secret}")
+
     private static String SECRET_KEY;
+    @Value("${jwt.secret}")
+    private void setSecretKey(String key){
+        this.SECRET_KEY = key;
+    }
 
     public static Claims extractAllClaims(String token) { // 2
         return Jwts.parserBuilder()
