@@ -7,9 +7,11 @@ import com.example.chat.dto.UserJoinResponseDto;
 import com.example.chat.dto.UserLoginRequestDto;
 import com.example.chat.dto.UserLoginResponseDto;
 import com.example.chat.exception.ApplicationException;
+import com.example.chat.repository.RefreshTokenRepository;
 import com.example.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class UserService{
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public UserJoinResponseDto join(UserJoinRequestDto joinRequestDto) {
@@ -41,7 +44,7 @@ public class UserService{
         }
         User user = joinRequestDto.toEntity(passwordEncoder.encode(password));
         User savedUser = userRepository.save(user);
-        log.info("savedUser = ", savedUser.toString());
+        log.info("savedUser = ", savedUser);
         UserJoinResponseDto responseDto = UserJoinResponseDto.toDto(savedUser);
         return responseDto;
     }
@@ -52,6 +55,9 @@ public class UserService{
         }
         String accessToken = jwtUtil.generateAccessToken(findUser.getId(), findUser.getEmail(), findUser.getRole());
         String refreshToken = jwtUtil.generateRefreshToken(findUser.getId(), findUser.getEmail(), findUser.getRole());
+
+        refreshTokenRepository.save(refreshToken);
+
         UserLoginResponseDto responseDto = new UserLoginResponseDto(accessToken, refreshToken);
         return responseDto;
     }
