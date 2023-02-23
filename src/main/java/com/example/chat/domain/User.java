@@ -13,6 +13,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)

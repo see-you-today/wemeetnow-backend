@@ -1,5 +1,6 @@
 package com.example.chat.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,13 +11,19 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-//@EnableRedisRepositories
+@Slf4j
 public class RedisConfig {
-    @Value("${spring.redis.host}")
     private String redisHost;
-
-    @Value("${spring.redis.port}")
     private int redisPort;
+
+    @Value("${spring.redis.host}")
+    private void setRedisHost(String redisHost){
+        this.redisHost = redisHost;
+    }
+    @Value("${spring.redis.port}")
+    private void setRedisPort(int redisPort){
+        this.redisPort = redisPort;
+    }
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -24,8 +31,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<Long, Object> redisTemplate() {
-        RedisTemplate<Long, Object> redisTemplate = new RedisTemplate<>();
+    public <K, V> RedisTemplate<K, V> redisTemplate() {
+        RedisTemplate<K, V> redisTemplate = new RedisTemplate<>();
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory());
