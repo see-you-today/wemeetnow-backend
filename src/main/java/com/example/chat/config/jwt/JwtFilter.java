@@ -24,6 +24,7 @@ import static org.springframework.http.HttpHeaders.*;
 public class JwtFilter extends OncePerRequestFilter {
     private final UserService userService;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // token은 변경되면 안되기에 final키워드 사용

@@ -6,6 +6,10 @@ import io.jsonwebtoken.security.Keys;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScans;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -19,14 +23,14 @@ import static com.example.chat.config.jwt.JwtExpirationEnums.REFRESH_TOKEN_EXPIR
 @Slf4j
 @Component
 public class JwtUtil {
-
     private static String SECRET_KEY;
+
     @Value("${jwt.secret}")
     private void setSecretKey(String key){
         this.SECRET_KEY = key;
     }
 
-    public static Claims extractAllClaims(String token) { // 2
+    public static Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(SECRET_KEY))
                 .build()
@@ -38,7 +42,7 @@ public class JwtUtil {
         return extractAllClaims(token).get("email", String.class);
     }
     public static Long getId(String token){
-        return extractAllClaims(token).get("id", Long.class);
+        return extractAllClaims(token).get("userId", Long.class);
     }
 
     private static SecretKey getSigningKey(String secretKey) {
@@ -59,12 +63,12 @@ public class JwtUtil {
         return doGenerateToken(userId, email, role, REFRESH_TOKEN_EXPIRATION_TIME.getValue());
     }
 
-    private String doGenerateToken(Long userId, String email, Role role, long expireTime) { // 1
+    private String doGenerateToken(Long userId, String email, Role role, long expireTime) {
         Claims claims = Jwts.claims();
         claims.put("userId", userId);
         claims.put("email", email);
         claims.put("role", role);
-        log.info("enter doGenerateToken() with ", SECRET_KEY);
+        log.info("22enter doGenerateToken()" + SECRET_KEY);
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -89,8 +93,6 @@ public class JwtUtil {
             log.error("JWT token is invalid");
             return false;
         }
-
-
     }
 
     public long getRemainMilliSeconds(String token) {

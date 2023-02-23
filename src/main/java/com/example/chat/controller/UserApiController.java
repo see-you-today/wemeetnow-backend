@@ -8,6 +8,7 @@ import com.example.chat.dto.UserLoginRequestDto;
 import com.example.chat.dto.UserLoginResponseDto;
 import com.example.chat.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserApiController {
     private final UserService userService;
-    private final JwtUtil jwtUtil;
 
     @GetMapping("/chat")
     public String chat() {
