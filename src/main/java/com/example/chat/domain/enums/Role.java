@@ -1,4 +1,4 @@
-package com.example.chat.domain;
+package com.example.chat.domain.enums;
 
 import lombok.Getter;
 

@@ -1,16 +1,11 @@
 package com.example.chat.config.jwt;
 
-import com.example.chat.domain.Role;
+import com.example.chat.domain.enums.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -77,12 +72,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
-            String email = getEmail(token);
-            return email.equals(userDetails.getUsername())
-                    && !isExpired(token);
+            return !isExpired(token);
         } catch(SecurityException | MalformedJwtException e) {
             log.error("Invalid JWT signature");
             return false;

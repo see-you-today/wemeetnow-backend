@@ -1,12 +1,10 @@
 package com.example.chat.domain;
 
+import com.example.chat.domain.enums.Role;
 import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.*;
-
-import static javax.persistence.GenerationType.AUTO;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
