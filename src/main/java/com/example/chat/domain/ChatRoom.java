@@ -1,5 +1,6 @@
 package com.example.chat.domain;
 
+import com.example.chat.dto.chat.ChatRoomRequestDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@Table(name = "chat_room")
 public class ChatRoom {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
@@ -29,10 +31,9 @@ public class ChatRoom {
     private final List<ChatParticipant> chatParticipants = new ArrayList<>();
 
 
-    public static ChatRoom save(ChatRoomRequest chatRoomRequest, Bucketlist bucketlist) {
+    public static ChatRoom save(ChatRoomRequestDto chatRoomRequest) {
         return ChatRoom.builder()
                 .roomName(chatRoomRequest.getRoomName())
-                .bucketlist(bucketlist)
                 .totalNum(chatRoomRequest.getTotalNum())
                 .lastMessageTime(LocalDateTime.now())
                 .build();

@@ -10,8 +10,10 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = PROTECTED)
 @ToString
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)

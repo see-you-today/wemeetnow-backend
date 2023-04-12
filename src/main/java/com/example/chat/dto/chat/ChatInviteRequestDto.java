@@ -10,4 +10,5 @@ import java.util.List;
 @Data
 public class ChatInviteRequestDto {
     private List<Long> userIdList;
+    private Long chatRoomId;
 }
