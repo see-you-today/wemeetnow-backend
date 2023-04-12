@@ -39,7 +39,7 @@ public class ChatService {
 
         //이미 방에 들어와있는지 확인
         for (User user : users) {
-            Optional<ChatParticipant> findUser = chatParticipantRepository.findByChatRoom_IdAndUser_Id(chatRoomId, user.getId());
+            Optional<ChatParticipant> findUser = chatParticipantRepository.findByChatRoomIdAndUserId(chatRoomId, user.getId());
             if (findUser.isPresent()) {
                 users.remove(user);
             }
@@ -57,6 +57,11 @@ public class ChatService {
         chatParticipantRepository.saveAll(chatParticipants);
 
         return chatParticipants;
+    }
+
+    public List<ChatRoom> findAllChatRoomByUserId(Long userId) {
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllWithUserId(userId);
+        return chatRooms;
     }
 }
 
