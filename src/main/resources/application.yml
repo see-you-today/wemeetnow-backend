@@ -13,3 +13,7 @@ spring:
 logging:
   level:
     com.example: debug
+
+server:
+  servlet:
+    context-path: /

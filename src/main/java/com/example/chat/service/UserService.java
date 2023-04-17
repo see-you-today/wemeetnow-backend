@@ -17,6 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static com.example.chat.exception.ErrorCode.*;
 
 @Service
@@ -53,6 +55,7 @@ public class UserService{
         if(!passwordEncoder.matches(loginRequestDto.getPassword(), findUser.getPassword())) {
             throw new ApplicationException((INCORRECT_PASSWORD_CORRECT));
         }
+        // expiration date 까지 설정해서 token return 함
         String accessToken = jwtUtil.generateAccessToken(findUser.getId(), findUser.getEmail(), findUser.getRole());
         String refreshToken = jwtUtil.generateRefreshToken(findUser.getId(), findUser.getEmail(), findUser.getRole());
 
@@ -62,6 +65,9 @@ public class UserService{
         return responseDto;
     }
     public User getUserByEmail(String email){
-        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("일치하는 사용자가 존재하지 않습니다."));
+        return userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("일치하는 사용자 이메일이 없습니다."));
+    }
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("일치하는 사용자 id가 없습니다."));
     }
 }

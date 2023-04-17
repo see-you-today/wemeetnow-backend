@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
-    @Query("select cr from ChatRoom cr, ChatParticipant cp where cp.user_id=:userId and cp.chat_room_id=cr.id")
+    @Query(value = "select cr from ChatRoom cr, ChatParticipant cp where cp.user_id=:userId and cp.chat_room_id=cr.chat_room_id", nativeQuery = true)
     List<ChatRoom> findAllWithUserId(Long userId);
 }

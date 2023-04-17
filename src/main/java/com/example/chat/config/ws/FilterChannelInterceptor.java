@@ -34,7 +34,9 @@ public class FilterChannelInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         try {
             log.info("preSend() / message: " + message.toString());
+            log.info("channel: ", channel);
             StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
             log.info("headerAccessor = ", headerAccessor);
             assert headerAccessor != null;
             if (headerAccessor.getCommand() == StompCommand.CONNECT) { // 연결 시에한 header 확인

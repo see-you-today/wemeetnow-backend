@@ -1,0 +1,97 @@
+<style>
+#all {
+	width: 400px;
+	height: 200px;
+	overflow: auto;
+	border: 2px solid red;
+}
+
+#me {
+	width: 400px;
+	height: 200px;
+	overflow: auto;
+	border: 2px solid blue;
+}
+
+#to {
+	width: 400px;
+	height: 200px;
+	overflow: auto;
+	border: 2px solid green;
+}
+</style>
+
+<script>
+var senderId = $('#senderId')
+var stompClient = null;
+console.log("senderId: ", senderId);
+// 서버소켓에 연결
+function connect() {
+	var socket = new SockJS('http://127.0.0.1:8080/ws');
+	// var socket = new SockJS('http://49.50.172.232:8080/ws');
+	stompClient = Stomp.over(socket);
+
+	stompClient.connect({}, function(frame) {
+		setConnected(true);
+		console.log('Connected: ' + frame);
+
+		stompClient.subscribe('/send/to/' + senderId, function(msg) {
+			$("#to").prepend(
+					"<h4>" + JSON.parse(msg.body).senderId +":"+
+					JSON.parse(msg.body).content1 + "</h4>");
+		});
+	});
+}
+
+// 서버소켓에 연결끊기
+function disconnect() {
+	if (stompClient !== null) {
+		stompClient.disconnect();
+	}
+	setConnected(false);
+	console.log("Disconnected");
+}
+
+// connect&disconnect버턴 활성화/비활성화
+function setConnected(isConnected) {
+	if (isConnected) {
+		$("#status").text("Connected");
+	} else {
+		$("#status").text("Disconnected");
+	}
+
+}
+
+// 서버에 메세지 요청 메서드
+function sendTo() {
+    var receiverId = $('#target').val();
+    var content1 = $('#toText').val();
+	var msg = JSON.stringify({
+		'senderId' : senderId,
+		'receiverId' : receiverId,
+		'content1' : content1
+	});
+	stompClient.send('/receive-to', {}, msg);
+}
+$(document).ready(function() {
+	connect();
+	$("#sendTo").click(function() {
+		sendTo();
+	});
+});
+</script>
+
+
+<div class="container">
+    <div class="col-sm-5">
+        <h1>Chat 1:1</h1>
+        <h1 th:text="${senderId}" id="senderId">ID</h1>
+        <h1 id="status">Status</h1>
+
+        <h3>To</h3>
+        <input placeholder="보낼사람의 id" type="text" id="target"/>
+        <input placeholder="보낼 텍스트" type="text" id="toText"><button id="sendTo">Send</button>
+        <div id="to"></div>
+
+    </div>
+</div>

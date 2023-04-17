@@ -9,6 +9,7 @@ import com.example.chat.dto.UserLoginResponseDto;
 import com.example.chat.service.UserService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
+@Slf4j
 public class UserApiController {
     private final UserService userService;
 
@@ -35,7 +37,8 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequestDto requestDto){
+    public ResponseEntity<UserLoginResponseDto> login(@ModelAttribute UserLoginRequestDto requestDto){
+        log.info("UserLoginRequestDto = [{}]", requestDto);
         UserLoginResponseDto responseDto = userService.login(requestDto);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
     }
