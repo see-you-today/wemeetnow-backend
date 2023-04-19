@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>WeMeetNow</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=52c9e8620c1081572383163cce5ffbb9"></script>
+  <!-- Web Socket -->
+  <script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
+  <script th:src="@{/webjars/stomp-websocket/stomp.min.js}"></script>
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 600px}
+
+    /* Set gray background color and 100% height */
+    .sidenav {
+      padding-top: 20px;
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height: 600px;}
+    }
+  </style>
+  <script>
+        function loginErrFunction(data) {
+          alert("로그인과정에서 오류가 발생했습니다.");
+          console.log("data = ", data);
+          return;
+        }
+        function loginSuccessFunction(data) {
+          alert("로그인에 성공했습니다.");
+          console.log("data = ", data);
+          return;
+        }
+		$(document).ready(function() {
+		    console.log("document cookie: ", document.cookie);
+		    var cookie = document.cookie;
+		    if (cookie.length > 0) {
+		      var accessToken = cookie.split('=')[1];
+		      console.log("accessToken from cookie = ", accessToken);
+		      document.cookie = "accessToken=" + accessToken;
+		    } else {
+		      console.log("accessToken from cookie is null");
+		    }
+			$('#login_form > button').click(function() {
+				$('#login_form').attr(
+					{
+						'action': '[[@{/api-front/v1/users/login}]]',
+						'method': 'post'
+					}
+				);
+				$('#login_form').submit();
+			});
+		});
+
+	</script>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" th:href="@{/}">Logo</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a th:href="@{/}">Home</a></li>
+
+        <li th:if="${loginUser != null}">
+          <a th:href="@{/cart(id=${loginUser.id})}">Cart</a>
+        </li>
+        <li>
+          <a th:href="@{/map1}">Map1</a>
+        </li>
+        <li>
+          <a th:href="@{/map2}">Map2</a>
+        </li>
+        <li th:if="${loginUser != null}">
+          <a th:href="@{/chat}">Chat</a>
+        </li>
+        <li th:if="${loginUser != null}">
+          <a th:href="@{/broadcast}">BroadCast</a>
+        </li>
+        <li th:if="${loginUser != null}">
+          <a th:href="@{/admin}">Admin</a>
+        </li>
+        <li th:if="${loginUser != null}">
+          <a th:href="@{/chatbot}">ChatBot</a>
+        </li>
+
+      </ul>
+      <ul th:if="${loginUser == null}"
+          class="nav navbar-nav navbar-right">
+        <li><a th:href="@{/register}">
+          <span class="glyphicon glyphicon-register"></span> Join
+        </a></li>
+        <li><a href="#" data-toggle="modal" data-target="#myModal">
+          <span class="glyphicon glyphicon-log-in"></span> Login
+        </a></li>
+      </ul>
+
+      <ul th:if="${loginUser != null}"
+          class="nav navbar-nav navbar-right">
+        <li>
+          <a href="##" th:text="${loginUser.username}"></a>
+        </li>
+        <li><a th:href="@{/logout}">
+          <span class="glyphicon glyphicon-log-out"></span> Logout
+        </a></li>
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid text-center">
+  <div class="col-sm-2 sidenav"
+       th:insert="${left} ? ${left} : mainleft"></div>
+
+  <!-- Main Center Start -->
+  <div class="col-sm-8 text-left"
+       th:insert="${center} ? ${center} : maincenter"></div>
+  <!-- Main Center End -->
+
+  <div class="col-sm-2 sidenav">
+    <div class="well">
+      <p>ADS</p>
+    </div>
+    <div class="well">
+      <p>ADS</p>
+    </div>
+  </div>
+</div>
+
+<footer class="container-fluid text-center">
+  <p>Footer Text</p>
+</footer>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">로그인</h4>
+      </div>
+      <!--  enctype="multipart/form-data" // 파일 업로드할 때 form에 추가 -->
+      <form id="login_form">
+        <div class="form-group">
+          <label for="input_email">Email:</label>
+          <input id="input_email" type="email" name="email"/>
+        </div>
+        <div class="form-group">
+          <label for="input_password">Password:</label>
+          <input id="input_password" name="password" type="password" style="width: 190px;">
+        </div>
+        <button>로그인</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatDto {
-    private Long channelId;
-    private Long writerId;
-    private String chat;
+    private Long roomId;
+    private Long senderId;
+    private Long receiverId;
+    private String content1;
+    private String content2;
 }
