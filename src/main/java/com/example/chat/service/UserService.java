@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.example.chat.exception.ErrorCode.*;
@@ -69,5 +70,9 @@ public class UserService{
     }
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("일치하는 사용자 id가 없습니다."));
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
