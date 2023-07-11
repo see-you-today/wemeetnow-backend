@@ -12,13 +12,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter @Setter
 @Table(name = "chat")
-public class Chat {
+public class Chat extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_id")
     private Long id;
 
     private String message;
+    @Enumerated(EnumType.STRING)
     private ChatType chatType;
 
     @ManyToOne(fetch = FetchType.LAZY)

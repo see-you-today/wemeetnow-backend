@@ -12,13 +12,14 @@ import com.example.chat.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.chat.exception.ErrorCode.*;
 
@@ -74,5 +75,15 @@ public class UserService{
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+    public Long getUserIdFromTokenInRequest(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = authorizationHeader.replace("Bearer ", "");
+
+        Long retValue = 0L;
+        if (!JwtUtil.isExpired(token)) {
+            retValue = JwtUtil.getId(token);
+        }
+        return retValue;
     }
 }
