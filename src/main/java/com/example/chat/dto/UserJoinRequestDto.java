@@ -23,6 +23,7 @@ public class UserJoinRequestDto {
                 .email(this.email)
                 .password(enCodedPassword)
                 .username(this.username)
+                .nickname(this.nickname)
                 .role(this.role)
                 .build();
     }

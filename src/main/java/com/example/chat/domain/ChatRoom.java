@@ -1,6 +1,6 @@
 package com.example.chat.domain;
 
-import com.example.chat.dto.chat.ChatRoomRequestDto;
+import com.example.chat.dto.chat.ChatRoomCreateRequestDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter @Setter
 @Table(name = "chat_room")
-public class ChatRoom {
+public class ChatRoom extends BaseTime {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
     private Long id;
@@ -28,14 +28,14 @@ public class ChatRoom {
 
     @JsonIgnore
     @OneToMany(mappedBy = "chatRoom")
-    private final List<ChatParticipant> chatParticipants = new ArrayList<>();
+    private final List<ChatParticipant> chatParticipantList = new ArrayList<>();
 
 
-    public static ChatRoom save(ChatRoomRequestDto chatRoomRequest) {
+    public static ChatRoom create(ChatRoomCreateRequestDto chatRoomRequest) {
         return ChatRoom.builder()
-                .roomName(chatRoomRequest.getRoomName())
-                .totalNum(chatRoomRequest.getTotalNum())
-                .lastMessageTime(LocalDateTime.now())
+                .roomName(chatRoomRequest.getChatRoomName())
+                .totalNum(chatRoomRequest.getParticipantIdList().size())
+                .lastMessageTime(null)
                 .build();
     }
 

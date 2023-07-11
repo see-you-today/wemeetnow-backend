@@ -20,4 +20,11 @@ public class ChatRoomResponseDto {
         );
     }
 
+    public static ChatRoomResponseDto fromEntity(ChatRoom chatRoom) {
+        return ChatRoomResponseDto.builder()
+                .roomId(chatRoom.getId())
+                .roomName(chatRoom.getRoomName())
+                .totalNum(chatRoom.getTotalNum())
+                .build();
+    }
 }
