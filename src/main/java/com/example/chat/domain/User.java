@@ -50,6 +50,8 @@ public class User extends BaseTime {
     @OneToMany(mappedBy = "user")
     private List<ChatParticipant> chatParticipantList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    private List<Chat> chatList = new ArrayList<>();
 
     @Builder
     public User(String username, String email, String password, String nickname, String provider, Boolean emailAuth, Role role) {
