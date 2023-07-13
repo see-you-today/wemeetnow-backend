@@ -1,8 +1,10 @@
 package com.example.chat.domain;
 
 import com.example.chat.domain.enums.ChatType;
+import com.example.chat.dto.ChatSendRequestDto;
 import com.example.chat.dto.chat.ChatRequestDto;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 
@@ -30,13 +32,18 @@ public class Chat extends BaseTime {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static Chat save(ChatRequestDto chatRequestDto, ChatRoom chatRoom, User user) {
+    private int notReadCount;
+    @Nullable
+    private String invitedUserName;
+
+
+    public static Chat createChat(User findUser, ChatRoom chatRoom, ChatSendRequestDto requestDto) {
         return Chat.builder()
-                .message(chatRequestDto.getMessage())
-                .chatType(chatRequestDto.getChatType())
+                .user(findUser)
                 .chatRoom(chatRoom)
-                .user(user)
+                .message(requestDto.getContent())
+                .chatType(requestDto.getChatType())
+                .notReadCount(chatRoom.getTotalNum())
                 .build();
     }
-
 }

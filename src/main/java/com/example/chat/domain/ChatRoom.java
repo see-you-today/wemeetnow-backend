@@ -22,20 +22,23 @@ public class ChatRoom extends BaseTime {
     private String roomName;
     private int totalNum;
     private LocalDateTime lastMessageTime;
-    @JsonIgnore
+    private String chatRoomImg = "https://velog.velcdn.com/images/kyunghwan1207/post/298d6a8f-1a21-41d6-b550-69aad4473de1/image.png";
+//    @JsonIgnore
     @OneToMany(mappedBy = "chatRoom")
-    private final List<Chat> chatList = new ArrayList<>();
+    private List<Chat> chatList = new ArrayList<>();
 
-    @JsonIgnore
+//    @JsonIgnore
     @OneToMany(mappedBy = "chatRoom")
-    private final List<ChatParticipant> chatParticipantList = new ArrayList<>();
+    private List<ChatParticipant> chatParticipantList = new ArrayList<>();
 
 
-    public static ChatRoom create(ChatRoomCreateRequestDto chatRoomRequest) {
+    public static ChatRoom create(ChatRoomCreateRequestDto chatRoomCreateRequestDto) {
         return ChatRoom.builder()
-                .roomName(chatRoomRequest.getChatRoomName())
-                .totalNum(chatRoomRequest.getParticipantIdList().size())
+                .roomName(chatRoomCreateRequestDto.getChatRoomName())
+                .totalNum(chatRoomCreateRequestDto.getParticipantIdList().size() + 1)
                 .lastMessageTime(null)
+                .chatList(new ArrayList<>())
+                .chatParticipantList(new ArrayList<>())
                 .build();
     }
 

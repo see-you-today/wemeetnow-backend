@@ -2,13 +2,17 @@ package com.example.chat.controller.front;
 
 import com.example.chat.config.jwt.JwtUtil;
 import com.example.chat.domain.User;
+import com.example.chat.dto.ChatSendRequestDto;
 import com.example.chat.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +52,7 @@ public class ChatApiFrontController {
             senderId = JwtUtil.getId(token);
             log.info("senderId = [{}]", senderId);
             findUser = userService.getUserById(senderId);
-         } else {
+        } else {
             log.info("auth hedaer is null");
         }
         model.addAttribute("senderId", senderId);
@@ -56,4 +60,5 @@ public class ChatApiFrontController {
         model.addAttribute("center", "chat/chat");
         return "main";
     }
+
 }

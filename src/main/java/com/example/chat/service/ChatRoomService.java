@@ -1,5 +1,6 @@
 package com.example.chat.service;
 
+import com.example.chat.domain.Chat;
 import com.example.chat.domain.ChatParticipant;
 import com.example.chat.domain.ChatRoom;
 import com.example.chat.domain.User;
@@ -28,6 +29,7 @@ public class ChatRoomService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatParticipantRepository chatParticipantRepository;
+    private final ChatService chatService;
 
     /**
      * 채팅방 생성했을 때, 채팅방과 참가자의 양방향 연관관계까지 고려해서 처리
@@ -36,7 +38,8 @@ public class ChatRoomService {
     public ChatRoom createChatRoom(ChatRoomCreateRequestDto chatRoomCreateRequestDto, Long loginedUserId) {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.create(chatRoomCreateRequestDto));
         User loginedUser = userRepository.findById(loginedUserId).get();
-        ChatParticipant chatParticipant1 = new ChatParticipant(chatRoom, loginedUser);
+        ChatParticipant chatParticipant1 = chatParticipantRepository.save(new ChatParticipant(chatRoom, loginedUser));
+
         loginedUser.getChatParticipantList().add(chatParticipant1);
         chatRoom.getChatParticipantList().add(chatParticipant1);
         chatParticipantRepository.save(chatParticipant1); // 자기자신을 참가자로 저장
@@ -82,10 +85,20 @@ public class ChatRoomService {
     @Transactional(readOnly = true)
     public List<ChatRoomResponseDto> getChatRooms(Long loginedUserId) {
         try {
-            List<ChatRoomResponseDto> chatRoomResponseDtoList =
-                    chatRoomRepository.findAllWithUserId(loginedUserId)
-                            .stream().map(cr -> ChatRoomResponseDto.fromEntity(cr)).collect(Collectors.toList());
+            List<ChatRoomResponseDto> chatRoomResponseDtoList = new ArrayList<>();
+            List<ChatRoom> chatRoomList = chatRoomRepository.findAllWithUserId(loginedUserId);
+            // 각 ChatRoom의 Chat 중 맨 마지막 lastMessage, lastDateTime 조회해서 fromEntity에 param으로 전달
+            for (ChatRoom chatRoom : chatRoomList) {
+                int chatListSize = chatRoom.getChatList().size();
+                if (chatListSize > 0) {
+                    Chat chat = chatRoom.getChatList().get(chatListSize - 1);
+                    chatRoomResponseDtoList.add(ChatRoomResponseDto.fromEntityWithChat(chatRoom, chat));
+                } else {
+                    chatRoomResponseDtoList.add(ChatRoomResponseDto.fromEntityNoChat(chatRoom));
+                }
+            }
             return chatRoomResponseDtoList;
+
         } catch (Exception e) {
             e.printStackTrace();
             e.getStackTrace();
