@@ -9,9 +9,11 @@ import com.example.chat.dto.UserLoginResponseDto;
 import com.example.chat.exception.ApplicationException;
 import com.example.chat.repository.RefreshTokenRepository;
 import com.example.chat.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.codehaus.groovy.syntax.TokenException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.chat.exception.ErrorCode.*;
 
@@ -85,5 +88,20 @@ public class UserService{
             retValue = JwtUtil.getId(token);
         }
         return retValue;
+    }
+    public User getUserFromTokenInRequest(HttpServletRequest request) throws Exception {
+        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String token = authorizationHeader.replace("Bearer ", "");
+        if (JwtUtil.isExpired(token)) {
+            log.error("토큰이 유효하지 않습니다.");
+            throw new Exception("토큰이 유효하지 않습니다.");
+        }
+        Optional<User> findUser = userRepository.findById(JwtUtil.getId(token));
+        if (findUser.isPresent()) {
+            return findUser.get();
+        } else {
+            log.error("사용자가 존재하지 않습니다.");
+            throw new Exception("사용자가 존재하지 않습니다.");
+        }
     }
 }
