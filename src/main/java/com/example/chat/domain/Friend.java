@@ -21,13 +21,10 @@ public class Friend extends BaseTime {
     @Id @GeneratedValue(strategy = IDENTITY)
     @Column(name = "friend_id")
     private Long id;
-
-    private Long friendedId; // 친구신청 당한 사람
+    private Long friendedId; // 친구인 사용자 id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user; // 친구신청 한 사람 -> 한 사람이 여려명에게 친구신청을 보낼 수 있기 때문
-
+    private User user; // 사용자 본인 id -> 한 사람이 여려명에게 친구신청을 보낼 수 있기 때문
     @Enumerated(EnumType.STRING)
-    private FriendStatus friendStatus; // BLOCK(차단), HIDE(숨김), FAVORITE(즐겨찾기)
-
+    private FriendStatus friendStatus; // BLOCK(차단), HIDE(숨김), FAVORITE(즐겨찾기), NORMAL(일반)
 }
