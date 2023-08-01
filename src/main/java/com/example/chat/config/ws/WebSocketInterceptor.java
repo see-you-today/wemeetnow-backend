@@ -26,7 +26,7 @@ import static com.example.chat.exception.ErrorCode.*;
 //@Order(Ordered.HIGHEST_PRECEDENCE + 99)
 @Slf4j
 @RequiredArgsConstructor
-public class FilterChannelInterceptor implements ChannelInterceptor {
+public class WebSocketInterceptor implements ChannelInterceptor {
     private final JwtUtil jwtUtil;
     Long userId = 0L;
 //    @SneakyThrows

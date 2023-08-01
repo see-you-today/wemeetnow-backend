@@ -2,7 +2,6 @@ package com.example.chat.domain;
 
 import com.example.chat.domain.enums.ChatType;
 import com.example.chat.dto.ChatSendRequestDto;
-import com.example.chat.dto.chat.ChatRequestDto;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
