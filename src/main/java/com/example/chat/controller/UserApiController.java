@@ -46,20 +46,25 @@ public class UserApiController {
     @GetMapping("/check-is-logined")
     public ResponseEntity checkIsLogined(HttpServletRequest request, HttpServletResponse response) {
         System.out.println("request = " + request);
-        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token = authorizationHeader.replace("Bearer ", "");
-        Claims claims = JwtUtil.extractAllClaims(token);
-        // JwtUtil.getEmail(token);
-        System.out.println("claims.get(\"email\") = " + claims.get("email"));
-        // JwtUtil.getId(token);
-        System.out.println("claims.get(\"userId\") = " + claims.get("userId"));
         HttpStatus status;
-        if (!JwtUtil.isExpired(token)) {
-            status = HttpStatus.OK;
-        } else {
-            status = HttpStatus.UNAUTHORIZED;
+        try {
+            String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            String token = authorizationHeader.replace("Bearer ", "");
+            Claims claims = JwtUtil.extractAllClaims(token);
+            // JwtUtil.getEmail(token);
+            log.info("claims.get(\"email\") = " + claims.get("email"));
+            // JwtUtil.getId(token);
+            log.info("claims.get(\"userId\") = " + claims.get("userId"));
+            if (!JwtUtil.isExpired(token)) {
+                status = HttpStatus.OK;
+            } else {
+                status = HttpStatus.UNAUTHORIZED;
+            }
+            return new ResponseEntity(claims, status);
+        } catch (Exception e) {
+            status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity(status);
         }
-        return new ResponseEntity(claims, status);
     }
     @GetMapping("/all")
     public ResponseEntity getUsersAll() {
@@ -68,18 +73,23 @@ public class UserApiController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<ReissueTokenResponseDto> reissue(@RequestBody RefreshTokenDto requestDto) {
+    public ResponseEntity reissue(@RequestBody RefreshTokenDto requestDto) {
         if (JwtUtil.isExpired(requestDto.getRefreshToken())) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED); // 401
         }
-        Claims claims = JwtUtil.extractAllClaims(requestDto.getRefreshToken());
-        Long userId = Long.valueOf(String.valueOf(claims.get("userId")));
-        String email = String.valueOf(claims.get("email"));
-        Role userRole = Role.valueOf(String.valueOf(claims.get("role")));
+        try {
+            Claims claims = JwtUtil.extractAllClaims(requestDto.getRefreshToken());
+            Long userId = Long.valueOf(String.valueOf(claims.get("userId")));
+            String email = String.valueOf(claims.get("email"));
+            Role userRole = Role.valueOf(String.valueOf(claims.get("role")));
 
-        String newAccessToken = jwtUtil.generateAccessToken(userId, email, userRole);
-        ReissueTokenResponseDto responseDto = new ReissueTokenResponseDto(newAccessToken, requestDto.getRefreshToken());
-        return new ResponseEntity(responseDto, HttpStatus.CREATED);
+            String newAccessToken = jwtUtil.generateAccessToken(userId, email, userRole);
+            ReissueTokenResponseDto responseDto = new ReissueTokenResponseDto(newAccessToken, requestDto.getRefreshToken());
+            return new ResponseEntity(responseDto, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PostMapping("/logout")
