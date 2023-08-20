@@ -6,15 +6,16 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.lang.annotation.Documented;
 
-//@Entity
+@Entity
+// @Documented
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-//@Table(name = "alarm")
-@Document
+@Table(name = "alarm")
 public class Alarm extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
