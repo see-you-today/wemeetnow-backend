@@ -1,7 +1,6 @@
 package com.example.chat.domain;
 
 import com.example.chat.dto.chat.ChatRoomCreateRequestDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,10 +18,10 @@ public class ChatRoom extends BaseTime {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
     private Long id;
-    private String roomName;
+    private String chatRoomName;
     private int totalNum;
     private LocalDateTime lastMessageTime;
-    private String chatRoomImg = "https://velog.velcdn.com/images/kyunghwan1207/post/298d6a8f-1a21-41d6-b550-69aad4473de1/image.png";
+    private String chatRoomImgUrl;
 //    @JsonIgnore
     @OneToMany(mappedBy = "chatRoom")
     private List<Chat> chatList = new ArrayList<>();
@@ -33,12 +32,17 @@ public class ChatRoom extends BaseTime {
 
 
     public static ChatRoom create(ChatRoomCreateRequestDto chatRoomCreateRequestDto) {
+        String chatRoomImgUrl = "https://velog.velcdn.com/images/kyunghwan1207/post/28ea6b20-85ba-476f-b6b6-74e460ec8382/image.png"; // 채팅방 default 이미지 url
+        if (!chatRoomCreateRequestDto.getChatRoomImgUrl().isEmpty()) {
+            chatRoomImgUrl = chatRoomCreateRequestDto.getChatRoomImgUrl();
+        }
         return ChatRoom.builder()
-                .roomName(chatRoomCreateRequestDto.getChatRoomName())
+                .chatRoomName(chatRoomCreateRequestDto.getChatRoomName())
                 .totalNum(chatRoomCreateRequestDto.getParticipantIdList().size() + 1)
                 .lastMessageTime(null)
                 .chatList(new ArrayList<>())
                 .chatParticipantList(new ArrayList<>())
+                .chatRoomImgUrl(chatRoomImgUrl)
                 .build();
     }
 

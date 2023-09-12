@@ -27,8 +27,10 @@ public class ChatRoomApiFrontController {
      * 채팅방 생성
      * */
     @PostMapping
-    public ResponseEntity createChatRoom(HttpServletRequest request, @RequestBody ChatRoomCreateRequestDto requestDto) {
-        System.out.println("ChatRoomCreateRequestDto = " + requestDto);
+    public ResponseEntity createChatRoom(
+            HttpServletRequest request,
+            @RequestBody ChatRoomCreateRequestDto requestDto) {
+        log.info("ChatRoomCreateRequestDto = " + requestDto);
         Long loginedUserId = userService.getUserIdFromTokenInRequest(request);
         if (loginedUserId == 0L) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);

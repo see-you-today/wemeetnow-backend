@@ -23,7 +23,7 @@ public class ChatRoomResponseDto {
     public static Page<ChatRoomResponseDto> pageList(Page<ChatRoom> chatRooms) {
         return chatRooms.map(chatRoom -> ChatRoomResponseDto.builder()
                 .chatRoomId(chatRoom.getId())
-                .chatRoomName(chatRoom.getRoomName())
+                .chatRoomName(chatRoom.getChatRoomName())
                 .totalNum(chatRoom.getTotalNum())
                 .build()
         );
@@ -33,18 +33,20 @@ public class ChatRoomResponseDto {
 
         return ChatRoomResponseDto.builder()
                 .chatRoomId(chatRoom.getId())
-                .chatRoomName(chatRoom.getRoomName())
+                .chatRoomName(chatRoom.getChatRoomName())
                 .totalNum(chatRoom.getTotalNum())
                 .lastMessageDateTime(chat.getCreatedDate())
                 .lastMessageContent(chat.getMessage())
+                .chatRoomImgUrl(chatRoom.getChatRoomImgUrl())
                 .build();
     }
     public static ChatRoomResponseDto ofChatRoom(ChatRoom chatRoom) {
 
         return ChatRoomResponseDto.builder()
                 .chatRoomId(chatRoom.getId())
-                .chatRoomName(chatRoom.getRoomName())
+                .chatRoomName(chatRoom.getChatRoomName())
                 .totalNum(chatRoom.getTotalNum())
+                .chatRoomImgUrl(chatRoom.getChatRoomImgUrl())
                 .build();
     }
 }
