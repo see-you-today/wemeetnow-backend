@@ -24,7 +24,7 @@ public class UserJoinRequestDto {
                 .password(enCodedPassword)
                 .username(this.username)
                 .nickname(this.nickname)
-                .role(this.role)
+                .role(Role.ROLE_USER)
                 .build();
     }
 }
