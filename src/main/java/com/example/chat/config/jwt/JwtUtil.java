@@ -46,8 +46,14 @@ public class JwtUtil {
     }
 
     public static Boolean isExpired(String token) {
-        Date expiration = extractAllClaims(token).getExpiration();
-        return expiration.before(new Date());
+        try {
+            Date expiration = extractAllClaims(token).getExpiration();
+            return expiration.before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
+
+
     }
 
     public String generateAccessToken(Long userId, String email, Role role) {

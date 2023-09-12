@@ -3,6 +3,7 @@ package com.example.chat.controller.front;
 import com.example.chat.domain.ChatRoom;
 import com.example.chat.dto.chat.ChatRoomCreateRequestDto;
 import com.example.chat.dto.chat.ChatRoomResponseDto;
+import com.example.chat.dto.chat.ChatRoomResponseDtoList;
 import com.example.chat.service.ChatRoomService;
 import com.example.chat.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class ChatRoomApiFrontController {
         }
     }
     /**
-     * 사용자가 참여중인 채팅방 전체 목록 조회
+     * 참여중인 채팅방 전체 목록 조회
      */
     @GetMapping
     public ResponseEntity getChatRooms(HttpServletRequest request) {
@@ -51,7 +52,7 @@ public class ChatRoomApiFrontController {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         try {
-            List<ChatRoomResponseDto> chatRoomResponseDtoList = chatRoomService.getChatRooms(loginedUserId);
+            ChatRoomResponseDtoList chatRoomResponseDtoList = chatRoomService.getChatRooms(loginedUserId);
             return new ResponseEntity(chatRoomResponseDtoList, HttpStatus.OK);
         } catch (IllegalArgumentException iae) {
             iae.getStackTrace();

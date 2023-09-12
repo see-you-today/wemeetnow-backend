@@ -7,6 +7,7 @@ import com.example.chat.domain.User;
 import com.example.chat.dto.chat.ChatInviteRequestDto;
 import com.example.chat.dto.chat.ChatRoomCreateRequestDto;
 import com.example.chat.dto.chat.ChatRoomResponseDto;
+import com.example.chat.dto.chat.ChatRoomResponseDtoList;
 import com.example.chat.repository.ChatParticipantRepository;
 import com.example.chat.repository.ChatRoomRepository;
 import com.example.chat.repository.UserRepository;
@@ -83,7 +84,7 @@ public class ChatRoomService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatRoomResponseDto> getChatRooms(Long loginedUserId) {
+    public ChatRoomResponseDtoList getChatRooms(Long loginedUserId) {
         try {
             List<ChatRoomResponseDto> chatRoomResponseDtoList = new ArrayList<>();
             List<ChatRoom> chatRoomList = chatRoomRepository.findAllWithUserId(loginedUserId);
@@ -92,12 +93,13 @@ public class ChatRoomService {
                 int chatListSize = chatRoom.getChatList().size();
                 if (chatListSize > 0) {
                     Chat chat = chatRoom.getChatList().get(chatListSize - 1);
-                    chatRoomResponseDtoList.add(ChatRoomResponseDto.fromEntityWithChat(chatRoom, chat));
+                    chatRoomResponseDtoList.add(ChatRoomResponseDto.ofChatRoomWithChat(chatRoom, chat));
                 } else {
-                    chatRoomResponseDtoList.add(ChatRoomResponseDto.fromEntityNoChat(chatRoom));
+                    chatRoomResponseDtoList.add(ChatRoomResponseDto.ofChatRoom(chatRoom));
                 }
             }
-            return chatRoomResponseDtoList;
+            ChatRoomResponseDtoList chatRoomResponseDtoListRet = new ChatRoomResponseDtoList(chatRoomResponseDtoList);
+            return chatRoomResponseDtoListRet;
 
         } catch (Exception e) {
             e.printStackTrace();

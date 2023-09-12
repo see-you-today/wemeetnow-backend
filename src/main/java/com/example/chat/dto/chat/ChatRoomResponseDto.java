@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @Data
 public class ChatRoomResponseDto {
-    private Long roomId;
-    private String roomName;
+    private Long chatRoomId;
+    private String chatRoomName;
     private int totalNum;
-    private String chatRoomImg;
+    private String chatRoomImgUrl;
     @Nullable
     private LocalDateTime lastMessageDateTime;
     @Nullable
@@ -22,28 +22,28 @@ public class ChatRoomResponseDto {
 
     public static Page<ChatRoomResponseDto> pageList(Page<ChatRoom> chatRooms) {
         return chatRooms.map(chatRoom -> ChatRoomResponseDto.builder()
-                .roomId(chatRoom.getId())
-                .roomName(chatRoom.getRoomName())
+                .chatRoomId(chatRoom.getId())
+                .chatRoomName(chatRoom.getRoomName())
                 .totalNum(chatRoom.getTotalNum())
                 .build()
         );
     }
 
-    public static ChatRoomResponseDto fromEntityWithChat(ChatRoom chatRoom, Chat chat) {
+    public static ChatRoomResponseDto ofChatRoomWithChat(ChatRoom chatRoom, Chat chat) {
 
         return ChatRoomResponseDto.builder()
-                .roomId(chatRoom.getId())
-                .roomName(chatRoom.getRoomName())
+                .chatRoomId(chatRoom.getId())
+                .chatRoomName(chatRoom.getRoomName())
                 .totalNum(chatRoom.getTotalNum())
                 .lastMessageDateTime(chat.getCreatedDate())
                 .lastMessageContent(chat.getMessage())
                 .build();
     }
-    public static ChatRoomResponseDto fromEntityNoChat(ChatRoom chatRoom) {
+    public static ChatRoomResponseDto ofChatRoom(ChatRoom chatRoom) {
 
         return ChatRoomResponseDto.builder()
-                .roomId(chatRoom.getId())
-                .roomName(chatRoom.getRoomName())
+                .chatRoomId(chatRoom.getId())
+                .chatRoomName(chatRoom.getRoomName())
                 .totalNum(chatRoom.getTotalNum())
                 .build();
     }

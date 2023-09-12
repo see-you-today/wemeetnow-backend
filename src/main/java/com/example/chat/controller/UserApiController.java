@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -44,26 +45,23 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(responseDto);
     }
     @GetMapping("/check-is-logined")
-    public ResponseEntity checkIsLogined(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("request = " + request);
-        HttpStatus status;
+    public ResponseEntity checkIsLogined(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        log.info("request = " + request);
         try {
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
             String token = authorizationHeader.replace("Bearer ", "");
+            if (JwtUtil.isExpired(token)) {
+                return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            }
             Claims claims = JwtUtil.extractAllClaims(token);
             // JwtUtil.getEmail(token);
             log.info("claims.get(\"email\") = " + claims.get("email"));
             // JwtUtil.getId(token);
             log.info("claims.get(\"userId\") = " + claims.get("userId"));
-            if (!JwtUtil.isExpired(token)) {
-                status = HttpStatus.OK;
-            } else {
-                status = HttpStatus.UNAUTHORIZED;
-            }
-            return new ResponseEntity(claims, status);
+            return new ResponseEntity(claims, HttpStatus.OK);
         } catch (Exception e) {
-            status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity(status);
+            log.error("raised error: ", e);
+            throw new Exception(e);
         }
     }
     @GetMapping("/all")
@@ -73,7 +71,7 @@ public class UserApiController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity reissue(@RequestBody RefreshTokenDto requestDto) {
+    public ResponseEntity reissue(@Valid @RequestBody RefreshTokenDto requestDto) throws Exception {
         if (JwtUtil.isExpired(requestDto.getRefreshToken())) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED); // 401
         }
@@ -82,12 +80,12 @@ public class UserApiController {
             Long userId = Long.valueOf(String.valueOf(claims.get("userId")));
             String email = String.valueOf(claims.get("email"));
             Role userRole = Role.valueOf(String.valueOf(claims.get("role")));
-
             String newAccessToken = jwtUtil.generateAccessToken(userId, email, userRole);
             ReissueTokenResponseDto responseDto = new ReissueTokenResponseDto(newAccessToken, requestDto.getRefreshToken());
             return new ResponseEntity(responseDto, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            log.error("raised error: ", e);
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
     }
