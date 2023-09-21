@@ -1,6 +1,7 @@
 package com.example.chat.controller;
 
 import com.example.chat.dto.ChatSendRequestDto;
+import com.example.chat.dto.chat.Msg;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +53,11 @@ public class WebSocketStompApiController {
         String sessionId = event.getSessionId();
         SESSION_IDS.remove(sessionId);
         log.info("[disconnect] connections : {}", SESSION_IDS.size());
+    }
+    @MessageMapping("/receiveall")
+    public void receiveall(Msg msg, SimpMessageHeaderAccessor headerAccessor) {
+        System.out.println(msg);
+        messagingTemplate.convertAndSend("/send", msg);
     }
 
 }
