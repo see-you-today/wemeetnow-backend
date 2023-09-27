@@ -40,11 +40,22 @@ public class ChatService {
     }
 
     public ChatListResponseDto getListWithChatRoomId(Long loginedUserId, Long chatRoomId) {
-        List<ChatResponseDto> chatResponseDtoList =
-                chatRepository.findByChatRoomId(chatRoomId)
-                        .stream().map(c -> ChatResponseDto.createWithChat(c, c.getUser().getId() == loginedUserId))
-                        .collect(Collectors.toList());
-        ChatListResponseDto chatListResponseDto = ChatListResponseDto.of(chatResponseDtoList);
-        return chatListResponseDto;
+        ChatListResponseDto chatListResponseDto = null;
+        try {
+            List<ChatResponseDto> chatResponseDtoList =
+                    chatRepository.findByChatRoomId(chatRoomId)
+                            .stream().map(c -> ChatResponseDto.createWithChat(c, c.getUser().getId() == loginedUserId))
+                            .collect(Collectors.toList());
+            chatListResponseDto = ChatListResponseDto.of(chatResponseDtoList);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            log.error("error: ", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("error: ", e.getMessage());
+        }
+        finally {
+            return chatListResponseDto;
+        }
     }
 }

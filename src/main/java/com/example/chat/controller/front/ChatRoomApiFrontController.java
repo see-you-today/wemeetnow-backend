@@ -54,6 +54,7 @@ public class ChatRoomApiFrontController {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         try {
+            log.info("loginedUserId: ", loginedUserId);
             ChatRoomResponseDtoList chatRoomResponseDtoList = chatRoomService.getChatRooms(loginedUserId);
             return new ResponseEntity(chatRoomResponseDtoList, HttpStatus.OK);
         } catch (IllegalArgumentException iae) {

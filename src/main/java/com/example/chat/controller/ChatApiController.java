@@ -72,7 +72,13 @@ public class ChatApiController {
     @GetMapping("/{chatRoomId}")
     public ResponseEntity getChatList(HttpServletRequest request, @PathVariable("chatRoomId") Long chatRoomId) {
         Long loginedUserId = userService.getUserIdFromTokenInRequest(request);
+        if (loginedUserId == 0L) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        }
         ChatListResponseDto chatListResponseDto = chatService.getListWithChatRoomId(loginedUserId, chatRoomId);
+        if (chatListResponseDto == null) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity(chatListResponseDto, HttpStatus.OK);
     }
 

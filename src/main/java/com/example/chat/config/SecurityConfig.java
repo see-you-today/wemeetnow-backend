@@ -24,8 +24,7 @@ public class SecurityConfig {
     private final UserService userService;
     private static final String[] PERMIT_URL = {
         "/api/v1/users/join", "/api/v1/users/login", "/api/v1/users/logout",
-            "/api/v1/chat/**",
-            "/api/v1/users/reissue",
+            "/api/v1/users/reissue"
     };
 
     @Bean

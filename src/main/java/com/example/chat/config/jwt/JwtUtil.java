@@ -49,11 +49,11 @@ public class JwtUtil {
         try {
             Date expiration = extractAllClaims(token).getExpiration();
             return expiration.before(new Date());
+        } catch (MalformedJwtException e) {
+            return true;
         } catch (ExpiredJwtException e) {
             return true;
         }
-
-
     }
 
     public String generateAccessToken(Long userId, String email, Role role) {
@@ -78,7 +78,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token) {
+    public static Boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
             return !isExpired(token);
