@@ -33,7 +33,7 @@ public class ChatRoom extends BaseTime {
 
     public static ChatRoom create(ChatRoomCreateRequestDto chatRoomCreateRequestDto) {
         String chatRoomImgUrl = "https://velog.velcdn.com/images/kyunghwan1207/post/28ea6b20-85ba-476f-b6b6-74e460ec8382/image.png"; // 채팅방 default 이미지 url
-        if (!chatRoomCreateRequestDto.getChatRoomImgUrl().isEmpty()) {
+        if (chatRoomCreateRequestDto.getChatRoomImgUrl() != null) {
             chatRoomImgUrl = chatRoomCreateRequestDto.getChatRoomImgUrl();
         }
         return ChatRoom.builder()

@@ -75,17 +75,24 @@ public class UserService{
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("일치하는 사용자 id가 없습니다."));
     }
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+    /**
+     * 헤더에 토큰이 유효하지 않을 경우 return 0L
+     * 유효할 경우 return 사용자id:Long
+     * */
     public Long getUserIdFromTokenInRequest(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token = authorizationHeader.replace("Bearer ", "");
-
         Long retValue = 0L;
-        if (!JwtUtil.isExpired(token)) {
-            retValue = JwtUtil.getId(token);
+        try {
+            String token = authorizationHeader.replace("Bearer ", "");
+            if (!JwtUtil.isExpired(token)){
+                retValue = JwtUtil.getId(token);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("error: ", e.getMessage());
         }
         return retValue;
     }
