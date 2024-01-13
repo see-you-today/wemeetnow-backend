@@ -33,7 +33,7 @@ import java.util.List;
 @Slf4j
 public class ChatApiController {
     private final ChatRoomService chatRoomService;
-    private final SimpMessageSendingOperations template;
+//    private final SimpMessageSendingOperations template;
     private final ChatService chatService;
     private final UserService userService;
 
@@ -85,29 +85,29 @@ public class ChatApiController {
     /**
      * 메시지 보내기
      * */
-    @MessageMapping("/send-message")
-    public void sendMessage( @Payload ChatRequestDto requestDto) {
-        // "/sub/chat/{channelId}" 채널을 구독 중인 클라이언트에게 메시지를 전송
-        log.info("requestDto = " + requestDto);
-        template.convertAndSend("/sub/chat/room/" + requestDto.getRoomId(), requestDto);
-    }
-
-    @MessageMapping("/receive-to")
-    public void receiveTo(ChatDto chatDto, SimpMessageHeaderAccessor accessor) {
-        log.info("receiveTo() / chatDto = " + chatDto);
-        Long senderId = chatDto.getSenderId();
-        Long receiverId = chatDto.getReceiverId();
-        template.convertAndSend("/send/to/" + receiverId, chatDto);
-    }
-    /**
-     * 채팅방 입장
-     * */
-    @MessageMapping("/enter")
-    public void enter(@Payload ChatRequestDto requestDto, SimpMessageHeaderAccessor accessor) {
-        log.info("requestDto = " + requestDto);
-        accessor.getSessionAttributes().put("username", requestDto.getUserName());
-        template.convertAndSend("/sub/chat/room/" + requestDto.getRoomId(), requestDto);
-    }
+//    @MessageMapping("/send-message")
+//    public void sendMessage(@Payload ChatRequestDto requestDto) {
+//        // "/sub/chat/{channelId}" 채널을 구독 중인 클라이언트에게 메시지를 전송
+//        log.info("requestDto = " + requestDto);
+//        template.convertAndSend("/sub/chat/room/" + requestDto.getRoomId(), requestDto);
+//    }
+//
+//    @MessageMapping("/receive-to")
+//    public void receiveTo(ChatDto chatDto, SimpMessageHeaderAccessor accessor) {
+//        log.info("receiveTo() / chatDto = " + chatDto);
+//        Long senderId = chatDto.getSenderId();
+//        Long receiverId = chatDto.getReceiverId();
+//        template.convertAndSend("/send/to/" + receiverId, chatDto);
+//    }
+//    /**
+//     * 채팅방 입장
+//     * */
+//    @MessageMapping("/enter")
+//    public void enter(@Payload ChatRequestDto requestDto, SimpMessageHeaderAccessor accessor) {
+//        log.info("requestDto = " + requestDto);
+//        accessor.getSessionAttributes().put("username", requestDto.getUserName());
+//        template.convertAndSend("/sub/chat/room/" + requestDto.getRoomId(), requestDto);
+//    }
 
 
 }
