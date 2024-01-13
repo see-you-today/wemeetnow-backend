@@ -20,9 +20,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // 웹 소캣의 엔드포인트: "/ws-stomp"
 //        registry.addEndpoint("/ws-stomp")
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*")
+                .setAllowedOriginPatterns("*");
 //                .setAllowedOrigins("http://localhost:3000")
-                .withSockJS();
+//                .withSockJS();
     }
 
 //    @Override
@@ -39,7 +39,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //    }
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/send","/broadcast");
+        registry.enableSimpleBroker("/send","/broadcast", "/sub/chat-room/1", "/sub/chat-room/*");
     }
 
 //    @Override

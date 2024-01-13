@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -33,15 +35,15 @@ public class ChatRoomApiFrontController {
         log.info("ChatRoomCreateRequestDto = " + requestDto);
         Long loginedUserId = userService.getUserIdFromTokenInRequest(request);
         if (loginedUserId == 0L) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(UNAUTHORIZED);
         }
         try {
             ChatRoom chatRoom = chatRoomService.createChatRoom(requestDto, loginedUserId);
-            return new ResponseEntity(HttpStatus.CREATED);
+            return new ResponseEntity(CREATED);
         } catch (Exception e) {
             e.getStackTrace();
             e.printStackTrace();
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(BAD_REQUEST);
         }
     }
     /**
@@ -51,16 +53,16 @@ public class ChatRoomApiFrontController {
     public ResponseEntity getChatRooms(HttpServletRequest request) {
         Long loginedUserId = userService.getUserIdFromTokenInRequest(request);
         if (loginedUserId == 0L) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(UNAUTHORIZED);
         }
         try {
             log.info("loginedUserId: ", loginedUserId);
             ChatRoomResponseDtoList chatRoomResponseDtoList = chatRoomService.getChatRooms(loginedUserId);
-            return new ResponseEntity(chatRoomResponseDtoList, HttpStatus.OK);
+            return new ResponseEntity(chatRoomResponseDtoList, OK);
         } catch (IllegalArgumentException iae) {
             iae.getStackTrace();
             iae.printStackTrace();
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(BAD_REQUEST);
         }
     }
 
